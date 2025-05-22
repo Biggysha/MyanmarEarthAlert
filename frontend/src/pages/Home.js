@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Alert, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Alert, Button, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import axios from 'axios';
 
 // Fix for default marker icons in Leaflet with React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -14,47 +15,64 @@ L.Icon.Default.mergeOptions({
 });
 
 const Home = () => {
-  // Sample earthquake data (in real app, this would come from an API)
   const [earthquakes, setEarthquakes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [latestSignificantQuake, setLatestSignificantQuake] = useState(null);
 
   useEffect(() => {
-    // In a real app, fetch from API - here we're using sample data
-    const sampleData = [
-      {
-        id: 1,
-        title: "M 5.2 - 25km NE of Mandalay",
-        magnitude: 5.2,
-        location: "25km NE of Mandalay, Myanmar",
-        coordinates: [21.9745, 96.0836], // [lat, lng]
-        depth: "10 km",
-        time: "2025-05-20T14:30:45",
-        alert: "yellow"
-      },
-      {
-        id: 2,
-        title: "M 4.5 - 15km W of Yangon",
-        magnitude: 4.5,
-        location: "15km W of Yangon, Myanmar",
-        coordinates: [16.8661, 96.1951], 
-        depth: "8 km",
-        time: "2025-05-19T09:15:22",
-        alert: "green"
-      },
-      {
-        id: 3,
-        title: "M 3.8 - 30km SE of Bago",
-        magnitude: 3.8,
-        location: "30km SE of Bago, Myanmar",
-        coordinates: [17.3350, 96.4821],
-        depth: "12 km",
-        time: "2025-05-18T21:45:10",
-        alert: "green"
+    // Myanmar region approximate boundaries
+    // Bounding box: min_latitude, min_longitude, max_latitude, max_longitude
+    const fetchEarthquakeData = async () => {
+      try {
+        // USGS API - past 30 days earthquakes around Myanmar region with magnitude 3+
+        // Myanmar approximate bounds: 9.5-28.5°N, 92.0-101.0°E
+        const response = await axios.get(
+          'https://earthquake.usgs.gov/fdsnws/event/1/query',
+          {
+            params: {
+              format: 'geojson',
+              starttime: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+              minlatitude: 9.5,
+              maxlatitude: 28.5,
+              minlongitude: 92.0,
+              maxlongitude: 101.0,
+              minmagnitude: 3.0
+            }
+          }
+        );
+
+        if (response.data && response.data.features) {
+          const quakeData = response.data.features.map(quake => ({
+            id: quake.id,
+            title: quake.properties.title,
+            magnitude: quake.properties.mag,
+            location: quake.properties.place,
+            coordinates: [quake.geometry.coordinates[1], quake.geometry.coordinates[0]], // Convert [lng, lat] to [lat, lng] for leaflet
+            depth: `${quake.geometry.coordinates[2]} km`,
+            time: new Date(quake.properties.time).toISOString(),
+            alert: quake.properties.alert || 'none'
+          }));
+          
+          setEarthquakes(quakeData);
+          
+          // Find latest significant earthquake (mag >= 4.5)
+          const significantQuakes = quakeData.filter(q => q.magnitude >= 4.5);
+          if (significantQuakes.length > 0) {
+            // Sort by time (newest first)
+            significantQuakes.sort((a, b) => new Date(b.time) - new Date(a.time));
+            setLatestSignificantQuake(significantQuakes[0]);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching earthquake data:', err);
+        setError('Failed to load earthquake data. Please try again later.');
+      } finally {
+        setLoading(false);
       }
-    ];
-    
-    setEarthquakes(sampleData);
-    setLoading(false);
+    };
+
+    fetchEarthquakeData();
   }, []);
 
   // Calculate color based on magnitude
@@ -83,46 +101,65 @@ const Home = () => {
       </div>
 
       {/* Current Alert Section */}
-      <Alert variant="danger" className="alert-card">
+      <Alert variant={latestSignificantQuake ? "danger" : "info"} className="alert-card">
         <h4><i className="fas fa-exclamation-circle me-2"></i>Current Alert Status</h4>
-        <p>
-          No active earthquake warnings at this time. The last significant earthquake was a magnitude 
-          5.2 event near Mandalay on May 20, 2025.
-        </p>
+        {latestSignificantQuake ? (
+          <p>
+            The last significant earthquake was a magnitude {latestSignificantQuake.magnitude.toFixed(1)} event 
+            {latestSignificantQuake.location} on {new Date(latestSignificantQuake.time).toLocaleDateString()}.
+          </p>
+        ) : (
+          <p>
+            No significant earthquakes (magnitude 4.5+) detected in the Myanmar region in the past 30 days.
+          </p>
+        )}
       </Alert>
 
       {/* Map Section */}
       <h2 className="mb-3 mt-5">Recent Earthquake Activity</h2>
-      <div className="earthquake-map">
-        <MapContainer center={myanmarCenter} zoom={6} style={{ height: '100%', width: '100%' }}>
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          
-          {earthquakes.map(quake => (
-            <React.Fragment key={quake.id}>
-              <Marker position={quake.coordinates}>
-                <Popup>
-                  <div>
-                    <h6>{quake.title}</h6>
-                    <p>Magnitude: {quake.magnitude}</p>
-                    <p>Depth: {quake.depth}</p>
-                    <p>Time: {new Date(quake.time).toLocaleString()}</p>
-                  </div>
-                </Popup>
-              </Marker>
-              <Circle 
-                center={quake.coordinates}
-                radius={quake.magnitude * 10000}
-                fillColor={getMagnitudeColor(quake.magnitude)}
-                weight={1}
-                opacity={0.8}
-                fillOpacity={0.4}
-              />
-            </React.Fragment>
-          ))}
-        </MapContainer>
+      <div className="earthquake-map" style={{ height: '500px', width: '100%', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+        {loading ? (
+          <div className="d-flex justify-content-center align-items-center h-100">
+            <Spinner animation="border" role="status" variant="primary">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+            <span className="ms-2">Loading earthquake data...</span>
+          </div>
+        ) : error ? (
+          <div className="d-flex justify-content-center align-items-center h-100">
+            <Alert variant="danger">{error}</Alert>
+          </div>
+        ) : (
+          <MapContainer center={myanmarCenter} zoom={6} style={{ height: '100%', width: '100%' }}>
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            
+            {earthquakes.map(quake => (
+              <React.Fragment key={quake.id}>
+                <Marker position={quake.coordinates}>
+                  <Popup>
+                    <div>
+                      <h6>{quake.title}</h6>
+                      <p>Magnitude: {quake.magnitude.toFixed(1)}</p>
+                      <p>Depth: {quake.depth}</p>
+                      <p>Time: {new Date(quake.time).toLocaleString()}</p>
+                    </div>
+                  </Popup>
+                </Marker>
+                <Circle 
+                  center={quake.coordinates}
+                  radius={quake.magnitude * 10000}
+                  fillColor={getMagnitudeColor(quake.magnitude)}
+                  weight={1}
+                  opacity={0.8}
+                  fillOpacity={0.4}
+                />
+              </React.Fragment>
+            ))}
+          </MapContainer>
+        )}
       </div>
 
       {/* Recent Earthquakes List */}
@@ -130,9 +167,18 @@ const Home = () => {
         <Col md={12}>
           <h3>Recent Earthquakes</h3>
           {loading ? (
-            <p>Loading earthquake data...</p>
+            <div className="text-center my-4">
+              <Spinner animation="border" role="status" variant="primary">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+              <p className="mt-2">Loading earthquake data...</p>
+            </div>
+          ) : error ? (
+            <Alert variant="danger">{error}</Alert>
+          ) : earthquakes.length === 0 ? (
+            <Alert variant="info">No earthquakes found in the Myanmar region for the past 30 days.</Alert>
           ) : (
-            earthquakes.map(quake => (
+            earthquakes.slice(0, 5).map(quake => (
               <Card key={quake.id} className="mb-3">
                 <Card.Body>
                   <div className="d-flex justify-content-between align-items-center">
@@ -154,7 +200,7 @@ const Home = () => {
                         fontSize: '1.2rem'
                       }}
                     >
-                      {quake.magnitude}
+                      {quake.magnitude.toFixed(1)}
                     </div>
                   </div>
                 </Card.Body>

@@ -1,67 +1,115 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Spinner, Badge, Form, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Spinner, Badge, Form, Button, Alert } from 'react-bootstrap';
+import axios from 'axios';
 
 const News = () => {
-  // Sample news data (in a real app, this would come from an API)
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [error, setError] = useState(null);
+
+  // Function to get appropriate image for each category
+  const getCategoryImage = (category, place) => {
+    const placeName = place ? place.replace(/,.*$/, '').trim() : 'Earthquake';
+    
+    switch(category) {
+      case 'recent':
+        return `https://source.unsplash.com/800x450/?earthquake,damage,${placeName}`;
+      case 'warning':
+        return 'https://source.unsplash.com/800x450/?earthquake,warning,danger';
+      case 'updates':
+        return 'https://source.unsplash.com/800x450/?seismograph,monitoring,technology';
+      case 'education':
+        return 'https://source.unsplash.com/800x450/?classroom,training,safety';
+      default:
+        return `https://source.unsplash.com/800x450/?earthquake,${placeName}`;
+    }
+  };
+
+  // Function to categorize news based on magnitude and time
+  const categorizeNews = (magnitude, daysAgo) => {
+    if (magnitude >= 6.0) return 'warning';
+    if (magnitude >= 5.0 && daysAgo <= 3) return 'warning';
+    if (daysAgo <= 7) return 'recent';
+    if (magnitude >= 4.5) return 'updates';
+    return 'education';
+  };
 
   useEffect(() => {
-    // In a real app, fetch from API - here we're using sample data
-    const sampleNews = [
-      {
-        id: 1,
-        title: "Magnitude 5.2 Earthquake Hits Near Mandalay",
-        content: "A moderate earthquake with a magnitude of 5.2 struck 25 kilometers northeast of Mandalay early Wednesday morning. According to the Myanmar Department of Meteorology and Hydrology, the earthquake occurred at 14:30 local time at a depth of 10 kilometers. There have been no immediate reports of damage or injuries.",
-        source: "Myanmar Times",
-        date: "2025-05-20",
-        category: "recent",
-        image: "https://via.placeholder.com/800x450?text=Mandalay+Earthquake"
-      },
-      {
-        id: 2,
-        title: "Myanmar Upgrades National Seismic Monitoring Network",
-        content: "The Department of Meteorology and Hydrology announced yesterday the completion of a major upgrade to the country's seismic monitoring network. The project, funded by international partners, includes the installation of 15 new state-of-the-art seismic stations across the country, significantly improving Myanmar's ability to detect and analyze earthquakes.",
-        source: "Myanmar National News",
-        date: "2025-05-15",
-        category: "updates",
-        image: "https://via.placeholder.com/800x450?text=Seismic+Monitoring+Upgrade"
-      },
-      {
-        id: 3,
-        title: "Scientists Warn of Increased Seismic Activity Along Sagaing Fault",
-        content: "A team of international geologists has published research indicating an increased probability of seismic activity along Myanmar's Sagaing Fault in the coming years. The study, published in the Journal of Seismology, analyzed patterns of strain accumulation along the fault line and suggests a higher than normal risk for earthquakes of magnitude 6.0 or greater.",
-        source: "Science Daily",
-        date: "2025-05-10",
-        category: "warning",
-        image: "https://via.placeholder.com/800x450?text=Sagaing+Fault+Warning"
-      },
-      {
-        id: 4,
-        title: "Government Conducts Earthquake Preparedness Drills in Yangon Schools",
-        content: "The Myanmar Disaster Management Department conducted earthquake preparedness drills in 50 schools across Yangon this week. The initiative aims to educate students and teachers on proper safety protocols during seismic events. Officials emphasized the importance of regular drills, especially in a country with significant earthquake risk.",
-        source: "Yangon Daily",
-        date: "2025-05-08",
-        category: "education",
-        image: "https://via.placeholder.com/800x450?text=School+Earthquake+Drills"
-      },
-      {
-        id: 5,
-        title: "Minor Earthquake Shakes Bago Region",
-        content: "A minor earthquake with a magnitude of 3.8 was recorded in the Bago Region on Tuesday evening. The epicenter was located approximately 30 kilometers southeast of Bago city. Residents reported feeling light shaking, but no damage or injuries have been reported.",
-        source: "Myanmar News Network",
-        date: "2025-05-18",
-        category: "recent",
-        image: "https://via.placeholder.com/800x450?text=Bago+Earthquake"
+    const fetchEarthquakeNews = async () => {
+      try {
+        // USGS API - significant earthquakes globally from the past 30 days
+        const significantResponse = await axios.get(
+          'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson'
+        );
+        
+        // USGS API - All 4.5+ earthquakes globally from the past 30 days
+        const response45 = await axios.get(
+          'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_month.geojson'
+        );
+        
+        // Additional response for Myanmar region earthquakes (using same params as home page)
+        const myanmarResponse = await axios.get(
+          'https://earthquake.usgs.gov/fdsnws/event/1/query',
+          {
+            params: {
+              format: 'geojson',
+              starttime: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+              minlatitude: 9.5,
+              maxlatitude: 28.5,
+              minlongitude: 92.0,
+              maxlongitude: 101.0,
+              minmagnitude: 3.5
+            }
+          }
+        );
+
+        // Combine and process the responses
+        const allFeatures = [
+          ...significantResponse.data.features,
+          ...response45.data.features,
+          ...myanmarResponse.data.features
+        ];
+        
+        // Remove duplicates by earthquake ID
+        const uniqueFeatures = Array.from(
+          new Map(allFeatures.map(item => [item.id, item])).values()
+        );
+        
+        // Sort by time (newest first)
+        uniqueFeatures.sort((a, b) => b.properties.time - a.properties.time);
+        
+        // Convert to news format
+        const newsItems = uniqueFeatures.map(feature => {
+          const magnitude = feature.properties.mag;
+          const time = new Date(feature.properties.time);
+          const daysAgo = Math.floor((Date.now() - time.getTime()) / (1000 * 60 * 60 * 24));
+          const category = categorizeNews(magnitude, daysAgo);
+          
+          return {
+            id: feature.id,
+            title: `Magnitude ${magnitude.toFixed(1)} Earthquake ${feature.properties.place}`,
+            content: `A ${magnitude >= 6.0 ? 'major' : magnitude >= 5.0 ? 'moderate' : 'minor'} earthquake with a magnitude of ${magnitude.toFixed(1)} was detected ${feature.properties.place} on ${time.toLocaleString()}. The earthquake occurred at a depth of ${(feature.geometry.coordinates[2]).toFixed(1)} kilometers. ${feature.properties.tsunami === 1 ? 'A tsunami warning was issued following this earthquake.' : ''}`,
+            source: 'USGS Earthquake Hazards Program',
+            date: time.toISOString().split('T')[0],
+            category: category,
+            place: feature.properties.place,
+            coordinates: feature.geometry.coordinates,
+            url: feature.properties.url,
+            image: getCategoryImage(category, feature.properties.place)
+          };
+        });
+        
+        setNews(newsItems);
+      } catch (err) {
+        console.error('Error fetching earthquake news:', err);
+        setError('Failed to load earthquake news. Please try again later.');
+      } finally {
+        setLoading(false);
       }
-    ];
-    
-    // Simulate API call delay
-    setTimeout(() => {
-      setNews(sampleNews);
-      setLoading(false);
-    }, 500);
+    };
+
+    fetchEarthquakeNews();
   }, []);
 
   // Filter news based on selected category
@@ -154,11 +202,26 @@ const News = () => {
         </div>
       ) : (
         <Row>
-          {filteredNews.length > 0 ? (
+          {error ? (
+            <Col xs={12}>
+              <Alert variant="danger">{error}</Alert>
+            </Col>
+          ) : filteredNews.length > 0 ? (
             filteredNews.map(article => (
               <Col md={6} lg={4} key={article.id} className="mb-4">
                 <Card className="news-card h-100">
-                  <Card.Img variant="top" src={article.image} alt={article.title} />
+                  <div style={{ height: '200px', overflow: 'hidden' }}>
+                    <Card.Img 
+                      variant="top" 
+                      src={article.image} 
+                      alt={article.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = `https://via.placeholder.com/800x450?text=${article.category.charAt(0).toUpperCase() + article.category.slice(1)}+Earthquake`;
+                      }}
+                    />
+                  </div>
                   <Card.Body>
                     <Badge bg={getCategoryBadge(article.category)} className="mb-2">
                       {article.category.charAt(0).toUpperCase() + article.category.slice(1)}
@@ -168,7 +231,19 @@ const News = () => {
                   </Card.Body>
                   <Card.Footer className="d-flex justify-content-between align-items-center bg-white">
                     <small className="text-muted">{formatDate(article.date)}</small>
-                    <Button variant="outline-primary" size="sm">Read More</Button>
+                    {article.url ? (
+                      <Button 
+                        variant="outline-primary" 
+                        size="sm" 
+                        href={article.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                      >
+                        Read More
+                      </Button>
+                    ) : (
+                      <Button variant="outline-primary" size="sm">Read More</Button>
+                    )}
                   </Card.Footer>
                 </Card>
               </Col>
