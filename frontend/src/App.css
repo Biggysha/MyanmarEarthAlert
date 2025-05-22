@@ -1,0 +1,50 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+}
+
+.hero-section {
+  background-color: #f5f5f5;
+  padding: 3rem 0;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+}
+
+.earthquake-map {
+  height: 400px;
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.alert-card {
+  border-left: 4px solid #dc3545;
+  margin-bottom: 1rem;
+}
+
+.news-card {
+  transition: transform 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+.news-card:hover {
+  transform: translateY(-5px);
+}
+
+.education-card {
+  border-top: 3px solid #0d6efd;
+  margin-bottom: 1.5rem;
+}
+
+.registration-form {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}

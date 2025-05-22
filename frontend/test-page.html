@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Myanmar Earthquake Alert System - Test Page</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .hero {
+      background-color: #f8f9fa;
+      padding: 3rem 0;
+      margin-bottom: 2rem;
+    }
+    .feature-icon {
+      font-size: 2.5rem;
+      color: #dc3545;
+      margin-bottom: 1rem;
+    }
+    .map-container {
+      height: 400px;
+      margin-bottom: 2rem;
+    }
+    #map {
+      height: 100%;
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .earthquake-info {
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .alert-btn {
+      background-color: #dc3545;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .alert-btn:hover {
+      background-color: #c82333;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        Myanmar Earthquake Alert
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#news">News</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#education">Education</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#register">Register for Alerts</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h1>Myanmar Earthquake Alert System</h1>
+          <p class="lead">Stay informed about seismic activity in Myanmar and surrounding regions. Receive timely alerts to help you stay safe during earthquakes.</p>
+          <a href="#register" class="alert-btn">Register for Alerts</a>
+        </div>
+        <div class="col-md-6">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Myanmar_%28orthographic_projection%29.svg/550px-Myanmar_%28orthographic_projection%29.svg.png" alt="Map of Myanmar" class="img-fluid rounded shadow">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container mb-5">
+    <h2 class="text-center mb-4">Recent Earthquake Activity</h2>
+    <div class="map-container">
+      <div id="map"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="earthquake-info">
+          <h4>Latest Earthquake</h4>
+          <p><strong>Location:</strong> 40km NE of Yangon</p>
+          <p><strong>Magnitude:</strong> 4.5</p>
+          <p><strong>Depth:</strong> 10km</p>
+          <p><strong>Time:</strong> May 22, 2025 15:30 UTC</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="earthquake-info">
+          <h4>Earthquake Risk Assessment</h4>
+          <p>Current risk level in major cities:</p>
+          <ul>
+            <li><strong>Yangon:</strong> Low</li>
+            <li><strong>Mandalay:</strong> Moderate</li>
+            <li><strong>Naypyidaw:</strong> Low</li>
+            <li><strong>Taunggyi:</strong> Moderate</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="news" class="container mb-5">
+    <h2 class="text-center mb-4">Latest Earthquake News</h2>
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">New Early Warning System Launched</h5>
+            <p class="card-text">The Myanmar government has launched a new early warning system for earthquakes...</p>
+          </div>
+          <div class="card-footer">
+            <small class="text-muted">Posted 2 days ago</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Minor Tremors Felt in Northern Regions</h5>
+            <p class="card-text">Several minor tremors were reported in the northern regions of Myanmar...</p>
+          </div>
+          <div class="card-footer">
+            <small class="text-muted">Posted 5 days ago</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Earthquake Preparedness Workshop</h5>
+            <p class="card-text">A series of earthquake preparedness workshops will be held in major cities...</p>
+          </div>
+          <div class="card-footer">
+            <small class="text-muted">Posted 1 week ago</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="education" class="container mb-5">
+    <h2 class="text-center mb-4">Earthquake Education</h2>
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <h4><i class="fas fa-book feature-icon d-block text-center"></i>What to Do During an Earthquake</h4>
+        <ul>
+          <li>Drop, Cover, and Hold On</li>
+          <li>Stay indoors if you're already inside</li>
+          <li>Move away from windows and exterior walls</li>
+          <li>If outdoors, find a clear spot away from buildings</li>
+          <li>If in a vehicle, pull over to a clear location</li>
+        </ul>
+      </div>
+      <div class="col-md-6 mb-4">
+        <h4><i class="fas fa-first-aid feature-icon d-block text-center"></i>Emergency Kit Essentials</h4>
+        <ul>
+          <li>Water (one gallon per person per day)</li>
+          <li>Non-perishable food</li>
+          <li>Flashlight and batteries</li>
+          <li>First aid kit</li>
+          <li>Medications and medical items</li>
+          <li>Multi-purpose tool</li>
+          <li>Personal hygiene items</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div id="register" class="container mb-5">
+    <h2 class="text-center mb-4">Register for Earthquake Alerts</h2>
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-body">
+            <form>
+              <div class="mb-3">
+                <label for="name" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="name" required>
+              </div>
+              <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phone" placeholder="+95..." required>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="email">
+              </div>
+              <div class="mb-3">
+                <label for="location" class="form-label">Your Location</label>
+                <select class="form-select" id="location" required>
+                  <option value="">Select your region</option>
+                  <option value="yangon">Yangon</option>
+                  <option value="mandalay">Mandalay</option>
+                  <option value="naypyidaw">Naypyidaw</option>
+                  <option value="bago">Bago</option>
+                  <option value="ayeyarwady">Ayeyarwady</option>
+                  <option value="sagaing">Sagaing</option>
+                  <option value="magway">Magway</option>
+                  <option value="tanintharyi">Tanintharyi</option>
+                  <option value="shan">Shan</option>
+                  <option value="mon">Mon</option>
+                  <option value="kayin">Kayin</option>
+                  <option value="kayah">Kayah</option>
+                  <option value="kachin">Kachin</option>
+                  <option value="chin">Chin</option>
+                  <option value="rakhine">Rakhine</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Alert Preferences</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="sms-alerts" checked>
+                  <label class="form-check-label" for="sms-alerts">
+                    SMS Alerts
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="email-alerts">
+                  <label class="form-check-label" for="email-alerts">
+                    Email Alerts
+                  </label>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="magnitude" class="form-label">Minimum Magnitude to Receive Alerts</label>
+                <select class="form-select" id="magnitude">
+                  <option value="3.0">3.0 and above</option>
+                  <option value="4.0" selected>4.0 and above</option>
+                  <option value="5.0">5.0 and above</option>
+                  <option value="6.0">6.0 and above</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-danger w-100">Register for Alerts</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-dark text-white py-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <h5>Myanmar Earthquake Alert System</h5>
+          <p>Providing timely and accurate earthquake information to keep Myanmar safe.</p>
+        </div>
+        <div class="col-md-4">
+          <h5>Quick Links</h5>
+          <ul class="list-unstyled">
+            <li><a href="#" class="text-white">Home</a></li>
+            <li><a href="#news" class="text-white">News</a></li>
+            <li><a href="#education" class="text-white">Education</a></li>
+            <li><a href="#register" class="text-white">Register for Alerts</a></li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5>Contact</h5>
+          <address>
+            <p><i class="fas fa-map-marker-alt me-2"></i> Yangon, Myanmar</p>
+            <p><i class="fas fa-phone me-2"></i> +95 9 123 456 789</p>
+            <p><i class="fas fa-envelope me-2"></i> info@myanmarearthquakealert.org</p>
+          </address>
+        </div>
+      </div>
+      <hr>
+      <div class="text-center">
+        <p>&copy; 2025 Myanmar Earthquake Alert System. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Initialize map
+    const map = L.map('map').setView([20.5, 96.0], 5);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    
+    // Add sample earthquake markers
+    const earthquakes = [
+      { lat: 16.8409, lng: 96.1735, mag: 4.5, location: "40km NE of Yangon", date: "May 22, 2025" },
+      { lat: 21.9588, lng: 96.0891, mag: 3.8, location: "Near Mandalay", date: "May 20, 2025" },
+      { lat: 19.7633, lng: 96.0785, mag: 3.2, location: "Naypyidaw Region", date: "May 19, 2025" },
+      { lat: 24.7068, lng: 98.5719, mag: 4.2, location: "Northern Shan State", date: "May 18, 2025" },
+      { lat: 14.0979, lng: 98.1979, mag: 3.9, location: "Myanmar-Thailand Border", date: "May 15, 2025" }
+    ];
+    
+    earthquakes.forEach(quake => {
+      const radius = quake.mag * 25000;  // Scale the circle based on magnitude
+      const circle = L.circle([quake.lat, quake.lng], {
+        color: '#dc3545',
+        fillColor: '#dc3545',
+        fillOpacity: 0.3,
+        radius: radius
+      }).addTo(map);
+      
+      circle.bindPopup(`
+        <strong>Magnitude:</strong> ${quake.mag}<br>
+        <strong>Location:</strong> ${quake.location}<br>
+        <strong>Date:</strong> ${quake.date}
+      `);
+    });
+    
+    // Form submission
+    document.querySelector('form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('Thank you for registering! You will now receive earthquake alerts based on your preferences.');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Myanmar Earthquake Alert System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .hero {
+      background-color: #f8f9fa;
+      padding: 3rem 0;
+      margin-bottom: 2rem;
+    }
+    .feature-icon {
+      font-size: 2.5rem;
+      color: #dc3545;
+      margin-bottom: 1rem;
+    }
+    .alert-btn:hover {
+      background-color: #c82333;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+    .news-link, .education-link, .register-link {
+      transition: color 0.3s ease;
+    }
+    .news-link:hover, .education-link:hover, .register-link:hover {
+      color: #dc3545 !important;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        Myanmar Earthquake Alert
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="index.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link news-link" href="#news-section" onclick="scrollToSection('news-section')">News</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link education-link" href="#education-section" onclick="scrollToSection('education-section')">Education</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link register-link btn btn-danger text-white ms-2" href="#register-section" onclick="scrollToSection('register-section')">Register for Alerts</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="container text-center">
+      <h1>Myanmar Earthquake Alert System</h1>
+      <p class="lead">
+        Stay informed about earthquake activity in Myanmar. Register for SMS alerts to receive
+        real-time notifications about significant earthquakes.
+      </p>
+      <a href="#register-section" onclick="scrollToSection('register-section')" class="btn btn-danger btn-lg mt-3 alert-btn">Register for SMS Alerts</a>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="alert alert-danger" role="alert">
+      <h4 class="alert-heading"><i class="fas fa-exclamation-circle me-2"></i>Current Alert Status</h4>
+      <p>
+        No active earthquake warnings at this time. The last significant earthquake was a magnitude 
+        5.2 event near Mandalay on May 20, 2025.
+      </p>
+    </div>
+
+    <!-- Earthquake Map -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h4><i class="fas fa-map-marked-alt me-2"></i>Recent Earthquake Activity</h4>
+      </div>
+      <div class="card-body">
+        <div id="earthquake-map" style="height: 400px; background-color: #e9ecef; display: flex; align-items: center; justify-content: center;">
+          <div class="text-center">
+            <i class="fas fa-map fa-3x mb-3 text-muted"></i>
+            <h5>Interactive Earthquake Map</h5>
+            <p class="text-muted">Shows recent seismic activity in Myanmar</p>
+          </div>
+        </div>
+        <div class="mt-3">
+          <div class="d-flex justify-content-between align-items-center mb-2 p-2 border-bottom">
+            <div>
+              <h5>M 5.2 - 25km NE of Mandalay</h5>
+              <p class="text-muted mb-0">May 20, 2025 | Depth: 10km</p>
+            </div>
+            <div class="rounded-circle d-flex justify-content-center align-items-center" style="background-color: #fc8d59; width: 50px; height: 50px; color: white; font-weight: bold;">5.2</div>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-2 p-2 border-bottom">
+            <div>
+              <h5>M 4.5 - 15km W of Yangon</h5>
+              <p class="text-muted mb-0">May 19, 2025 | Depth: 8km</p>
+            </div>
+            <div class="rounded-circle d-flex justify-content-center align-items-center" style="background-color: #fee08b; width: 50px; height: 50px; color: white; font-weight: bold;">4.5</div>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-2 p-2 border-bottom">
+            <div>
+              <h5>M 3.8 - 30km SE of Bago</h5>
+              <p class="text-muted mb-0">May 18, 2025 | Depth: 12km</p>
+            </div>
+            <div class="rounded-circle d-flex justify-content-center align-items-center" style="background-color: #91cf60; width: 50px; height: 50px; color: white; font-weight: bold;">3.8</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- News Section -->
+    <h2 class="mb-4 mt-5" id="news-section">Earthquake News</h2>
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <img src="https://via.placeholder.com/300x200?text=Earthquake+News" class="card-img-top" alt="News">
+          <div class="card-body">
+            <span class="badge bg-primary mb-2">Recent</span>
+            <h5 class="card-title">Magnitude 5.2 Earthquake Hits Near Mandalay</h5>
+            <p class="card-text">A moderate earthquake with a magnitude of 5.2 struck 25 kilometers northeast of Mandalay early Wednesday morning...</p>
+            <button class="btn btn-sm btn-outline-primary" onclick="alert('This would show the full news article')">Read More</button>
+          </div>
+          <div class="card-footer text-muted">
+            <small>May 20, 2025</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <img src="https://via.placeholder.com/300x200?text=Monitoring+Network" class="card-img-top" alt="News">
+          <div class="card-body">
+            <span class="badge bg-info mb-2">Updates</span>
+            <h5 class="card-title">Myanmar Upgrades Seismic Monitoring Network</h5>
+            <p class="card-text">The Department of Meteorology and Hydrology announced yesterday the completion of a major upgrade to the country's seismic monitoring network...</p>
+            <button class="btn btn-sm btn-outline-primary" onclick="alert('This would show the full news article')">Read More</button>
+          </div>
+          <div class="card-footer text-muted">
+            <small>May 15, 2025</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <img src="https://via.placeholder.com/300x200?text=Sagaing+Fault" class="card-img-top" alt="News">
+          <div class="card-body">
+            <span class="badge bg-danger mb-2">Warning</span>
+            <h5 class="card-title">Scientists Warn of Increased Seismic Activity</h5>
+            <p class="card-text">A team of international geologists has published research indicating an increased probability of seismic activity along Myanmar's Sagaing Fault...</p>
+            <button class="btn btn-sm btn-outline-primary" onclick="alert('This would show the full news article')">Read More</button>
+          </div>
+          <div class="card-footer text-muted">
+            <small>May 10, 2025</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mb-5">
+      <button class="btn btn-primary" onclick="alert('This would show more news articles')">View All News</button>
+    </div>
+
+    <!-- Education Section -->
+    <h2 class="mb-4 mt-5" id="education-section">Earthquake Education</h2>
+    <div class="card mb-4">
+      <div class="card-header bg-success text-white">
+        <h4><i class="fas fa-book-reader me-2"></i>Learn About Earthquakes</h4>
+      </div>
+      <div class="card-body">
+        <div class="accordion" id="educationAccordion">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                <strong>What Are Earthquakes?</strong>
+              </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#educationAccordion">
+              <div class="accordion-body">
+                <p>Earthquakes are the shaking, rolling or sudden shock of the earth's surface. They are the Earth's natural means of releasing stress. More than a million earthquakes occur each year, and many go undetected because they hit remote areas or have very small magnitudes.</p>
+                <p>The location below the earth's surface where the earthquake starts is called the <strong>hypocenter</strong>, and the location directly above it on the surface of the earth is called the <strong>epicenter</strong>.</p>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                <strong>Before an Earthquake - How to Prepare</strong>
+              </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#educationAccordion">
+              <div class="accordion-body">
+                <ul>
+                  <li><strong>Prepare an emergency kit</strong> containing first aid supplies, food, water, flashlight, batteries, and other essentials.</li>
+                  <li><strong>Create a family emergency plan</strong> including meeting places and emergency contact information.</li>
+                  <li><strong>Secure heavy furniture</strong> to walls and place heavy items on lower shelves.</li>
+                  <li><strong>Know how to turn off gas, water, and electricity</strong> at the main switches.</li>
+                  <li><strong>Identify safe places in each room</strong> - under sturdy furniture or against an interior wall.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingThree">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                <strong>During an Earthquake - How to Stay Safe</strong>
+              </button>
+            </h2>
+            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#educationAccordion">
+              <div class="accordion-body">
+                <p><strong>Drop, Cover, and Hold On:</strong></p>
+                <ul>
+                  <li><strong>DROP</strong> to the ground onto your hands and knees.</li>
+                  <li><strong>COVER</strong> your head and neck with your arms. If possible, crawl under a sturdy table or desk.</li>
+                  <li><strong>HOLD ON</strong> to your shelter until the shaking stops.</li>
+                </ul>
+                <p><strong>If you are outdoors:</strong> Move away from buildings, streetlights, and utility wires. Find a clear spot and drop to the ground.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-4">
+          <button class="btn btn-success" onclick="alert('This would show more educational content')">View More Resources</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Registration Section -->
+    <h2 class="mb-4 mt-5" id="register-section">Register for SMS Alerts</h2>
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <div class="card shadow">
+          <div class="card-header bg-danger text-white">
+            <h4><i class="fas fa-bell me-2"></i>SMS Alert Registration</h4>
+          </div>
+          <div class="card-body">
+            <form id="alertForm" onsubmit="return handleSubmit(event)">
+              <div class="mb-3">
+                <label for="name" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="name" required>
+              </div>
+              <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phone" placeholder="+95 9xxxxxxxx" required>
+                <div class="form-text">Enter your Myanmar phone number in international format.</div>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email Address (Optional)</label>
+                <input type="email" class="form-control" id="email">
+              </div>
+              <div class="mb-3">
+                <label for="city" class="form-label">City/Region</label>
+                <select class="form-select" id="city" required>
+                  <option value="">Select your city/region</option>
+                  <option value="yangon">Yangon</option>
+                  <option value="mandalay">Mandalay</option>
+                  <option value="naypyidaw">Naypyidaw</option>
+                  <option value="bago">Bago</option>
+                  <option value="mawlamyine">Mawlamyine</option>
+                  <option value="other">Other (All Myanmar)</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Alert Level Preference</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="alertLevel" id="allAlerts" value="all" checked>
+                  <label class="form-check-label" for="allAlerts">
+                    All earthquakes (magnitude 4.0 and above)
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="alertLevel" id="significantAlerts" value="significant">
+                  <label class="form-check-label" for="significantAlerts">
+                    Significant earthquakes only (magnitude 5.0 and above)
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="alertLevel" id="majorAlerts" value="major">
+                  <label class="form-check-label" for="majorAlerts">
+                    Major earthquakes only (magnitude 6.0 and above)
+                  </label>
+                </div>
+              </div>
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="acknowledgment" required>
+                <label class="form-check-label" for="acknowledgment">I understand that this is an automated alert service and that message and data rates may apply.</label>
+              </div>
+              <button type="submit" class="btn btn-danger w-100 btn-lg">Register for Alerts</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-dark text-light py-4 mt-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h5>Myanmar Earthquake Alert</h5>
+          <p class="text-muted">
+            Providing timely earthquake alerts and education to keep Myanmar citizens safe.
+          </p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p class="mb-0">
+            <small class="text-muted">
+              &copy; 2025 Myanmar Earthquake Alert System. All rights reserved.
+            </small>
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function scrollToSection(sectionId) {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+      return false;
+    }
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      const name = document.getElementById('name').value;
+      const phone = document.getElementById('phone').value;
+      const city = document.getElementById('city').value;
+      
+      // In a real application, this would send data to the server
+      // For now, just show an alert
+      alert(`Thank you, ${name}! You have successfully registered for earthquake alerts. You will receive notifications at ${phone} for earthquakes in ${city}.`);
+      
+      // Reset the form
+      document.getElementById('alertForm').reset();
+      return false;
+    }
+  </script>
+</body>
+</html>

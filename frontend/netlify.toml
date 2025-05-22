@@ -1,0 +1,13 @@
+[build]
+  publish = "build"
+  command = "CI=false && export NODE_OPTIONS=--openssl-legacy-provider && npm run build"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build.environment]
+  REACT_APP_API_URL = "https://myanmar-earthquake-api.onrender.com"
+  NODE_VERSION = "16"
+  CI = "false"
