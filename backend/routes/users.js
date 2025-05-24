@@ -6,42 +6,56 @@ const User = require('../models/User');
 // @route   POST api/users
 // @desc    Register a user for alerts
 // @access  Public
-router.post('/', async (req, res) => {
-  try {
-    const { name, phone, email, city, alertLevel } = req.body;
-    
-    // Check if user already exists
-    let user = await User.findOne({ phone });
-    if (user) {
-      return res.status(400).json({ message: 'User already registered with this phone number' });
+router.post(
+  '/',
+  [
+    check('name', 'Name is required').not().isEmpty(),
+    check('phone', 'Please include a valid phone number').matches(/^\+?[0-9]{10,15}$/),
+    check('city', 'City is required').not().isEmpty(),
+    check('alertLevel', 'Alert level must be all, significant, or major').isIn(['all', 'significant', 'major'])
+  ],
+  async (req, res) => {  // MAKE SURE THIS IS MARKED ASYNC
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-    
-    // Create new user
-    user = new User({
-      name,
-      phone,
-      email,
-      city,
-      alertLevel,
-      active: true
-    });
-    
-    await user.save();
-    
-    res.status(201).json({ 
-      success: true,
-      message: 'Registration successful! You will now receive earthquake alerts.',
-      user: {
-        id: user._id,
-        name: user.name,
-        phone: user.phone
+
+    const { name, phone, email, city, alertLevel } = req.body;
+
+    try {
+      // Check if user already exists
+      let user = await User.findOne({ phone });
+
+      if (user) {
+        // Update existing user
+        user.name = name;
+        user.email = email || user.email;
+        user.city = city;
+        user.alertLevel = alertLevel;
+        user.active = true;
+
+        await user.save();
+        return res.json({ 
+          message: 'User updated successfully', 
+          user: {
+            id: user._id,
+            name: user.name,
+            phone: user.phone,
+            city: user.city,
+            alertLevel: user.alertLevel
+          } 
+        });
       }
-    });
-  } catch (error) {
-    console.error('Error registering user:', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-});
+
+      // Create new user
+      user = new User({
+        name,
+        phone,
+        email,
+        city,
+        alertLevel
+      });
 
       await user.save();
 
@@ -65,7 +79,7 @@ router.post('/', async (req, res) => {
 // @route   GET api/users
 // @desc    Get all users (admin only in real app)
 // @access  Private
-router.get('/', async (req, res) => {
+router.get('/', async (req, res) => {  // MAKE SURE THIS IS MARKED ASYNC
   try {
     const users = await User.find().select('-__v');
     res.json(users);
@@ -78,7 +92,7 @@ router.get('/', async (req, res) => {
 // @route   DELETE api/users/:phone
 // @desc    Unsubscribe a user by phone number
 // @access  Public
-router.delete('/:phone', async (req, res) => {
+router.delete('/:phone', async (req, res) => {  // MAKE SURE THIS IS MARKED ASYNC
   try {
     const phone = req.params.phone;
     
