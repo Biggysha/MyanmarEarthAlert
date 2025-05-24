@@ -3,8 +3,8 @@ import { Container, Row, Col, Card, Alert, Button, Spinner } from 'react-bootstr
 import { Link } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import '../styles/map.css';
-import L from 'leaflet';
+import '../styles/map.css'; 
+import L from '../utils/leaflet-icons-fix';  // Import the fixed L
 import axios from 'axios';
 
 // Fix for default marker icons in Leaflet with React
