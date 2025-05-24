@@ -6,56 +6,42 @@ const User = require('../models/User');
 // @route   POST api/users
 // @desc    Register a user for alerts
 // @access  Public
-router.post(
-  '/',
-  [
-    check('name', 'Name is required').not().isEmpty(),
-    check('phone', 'Please include a valid phone number').matches(/^\+?[0-9]{10,15}$/),
-    check('city', 'City is required').not().isEmpty(),
-    check('alertLevel', 'Alert level must be all, significant, or major').isIn(['all', 'significant', 'major'])
-  ],
-  async (req, res) => {
-    // Check for validation errors
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
+router.post('/', async (req, res) => {
+  try {
     const { name, phone, email, city, alertLevel } = req.body;
-
-    try {
-      // Check if user already exists
-      let user = await User.findOne({ phone });
-
-      if (user) {
-        // Update existing user
-        user.name = name;
-        user.email = email || user.email;
-        user.city = city;
-        user.alertLevel = alertLevel;
-        user.active = true;
-
-        await user.save();
-        return res.json({ 
-          message: 'User updated successfully', 
-          user: {
-            id: user._id,
-            name: user.name,
-            phone: user.phone,
-            city: user.city,
-            alertLevel: user.alertLevel
-          } 
-        });
+    
+    // Check if user already exists
+    let user = await User.findOne({ phone });
+    if (user) {
+      return res.status(400).json({ message: 'User already registered with this phone number' });
+    }
+    
+    // Create new user
+    user = new User({
+      name,
+      phone,
+      email,
+      city,
+      alertLevel,
+      active: true
+    });
+    
+    await user.save();
+    
+    res.status(201).json({ 
+      success: true,
+      message: 'Registration successful! You will now receive earthquake alerts.',
+      user: {
+        id: user._id,
+        name: user.name,
+        phone: user.phone
       }
-
-      // Create new user
-      user = new User({
-        name,
-        phone,
-        email,
-        city,
-        alertLevel
-      });
+    });
+  } catch (error) {
+    console.error('Error registering user:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
 
       await user.save();
 
