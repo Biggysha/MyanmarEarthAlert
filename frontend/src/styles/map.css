@@ -1,0 +1,43 @@
+/* Leaflet map container styling */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+/* Earthquake map container */
+.earthquake-map {
+  height: 500px;
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  position: relative;
+}
+
+/* Fix for marker icons */
+.leaflet-marker-icon {
+  border: none;
+  background: none;
+}
+
+/* Popup styling */
+.leaflet-popup-content {
+  margin: 10px;
+  font-family: Arial, sans-serif;
+}
+
+.leaflet-popup-content h6 {
+  margin-top: 0;
+  font-weight: bold;
+}
+
+/* Control styling */
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+}
+
+.leaflet-control-zoom a {
+  border-radius: 4px !important;
+}
