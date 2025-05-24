@@ -23,7 +23,11 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(helmet()); // Security headers
-app.use(cors()); // Enable CORS for frontend
+app.use(cors({
+  origin: ['https://myanmarearthquakealert.netlify.app', 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 app.use(express.json()); // Parse JSON request body
 app.use(morgan('dev')); // Request logging
 
