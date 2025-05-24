@@ -9,9 +9,9 @@ import axios from 'axios';
 // Fix for default marker icons in Leaflet with React
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png').default,
+  iconUrl: require('leaflet/dist/images/marker-icon.png').default,
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png').default,
 });
 
 const Home = () => {
@@ -117,7 +117,7 @@ const Home = () => {
 
       {/* Map Section */}
       <h2 className="mb-3 mt-5">Recent Earthquake Activity</h2>
-      <div className="earthquake-map" style={{ height: '500px', width: '100%', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+      <div className="earthquake-map" style={{ height: '500px', width: '100%', borderRadius: '8px' }}>
         {loading ? (
           <div className="d-flex justify-content-center align-items-center h-100">
             <Spinner animation="border" role="status" variant="primary">
@@ -130,7 +130,11 @@ const Home = () => {
             <Alert variant="danger">{error}</Alert>
           </div>
         ) : (
-          <MapContainer center={myanmarCenter} zoom={6} style={{ height: '100%', width: '100%' }}>
+       <MapContainer 
+  center={[19.7633, 96.0785]} 
+  zoom={6} 
+  style={{ height: '100%', width: '100%' }}
+>
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
