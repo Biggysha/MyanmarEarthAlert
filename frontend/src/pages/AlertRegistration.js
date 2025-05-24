@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { Container, Form, Button, Row, Col, Card, Alert } from 'react-bootstrap';
-
+import { userApi } from '../utils/api';
 const AlertRegistration = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -23,15 +24,42 @@ const AlertRegistration = () => {
     });
   };
   
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const form = e.currentTarget;
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const form = e.currentTarget;
+  
+  if (form.checkValidity() === false) {
+    e.stopPropagation();
+    setValidated(true);
+    return;
+  }
+  
+  try {
+    // Actually call the API to register the user
+    await userApi.register(formData);
     
-    if (form.checkValidity() === false) {
-      e.stopPropagation();
-      setValidated(true);
-      return;
-    }
+    // Show success message
+    setShowSuccess(true);
+    setError('');
+    setValidated(false);
+    
+    // Reset the form after successful submission
+    setFormData({
+      name: '',
+      phone: '',
+      email: '',
+      city: '',
+      alertLevel: 'all',
+      acknowledgment: false,
+    });
+    
+    // Scroll to the top to show the success message
+    window.scrollTo(0, 0);
+  } catch (err) {
+    setError(err.message || 'Failed to register. Please try again.');
+    window.scrollTo(0, 0);
+  }
+};
     
     // In a real app, this would be an API call to register the user
     // For demonstration, we'll simulate a successful registration
