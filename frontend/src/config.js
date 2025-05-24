@@ -1,7 +1,7 @@
 // Configuration settings for the frontend
 const config = {
   // API base URL - change this in production to your actual backend URL
-  apiUrl: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
+  apiUrl: process.env.REACT_APP_API_URL || 'https://myanmarearthalert.onrender.com/api',
   
   // Map settings
   map: {
